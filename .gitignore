@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets / local config
+.env
+.env.*
+*.key
+*.pem
+
+# Data: keep large/local market data out of Git
+/data/**
+!/data/**/.gitkeep
+
+# Freqtrade/local trading artifacts
+user_data/data/
+user_data/backtest_results/
+user_data/hyperopt_results/
+user_data/logs/
+*.sqlite
+*.sqlite3
+
+# Logs / temp
+*.log
+tmp/
+temp/
