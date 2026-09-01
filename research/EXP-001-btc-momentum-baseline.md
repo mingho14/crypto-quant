@@ -2,11 +2,16 @@
 
 ## Research Question
 
-当 BTC 在 5-minute timeframe 上持续位于 EMA20 上方时，未来短期 return 是否高于正常水平？
+当 BTC 在 5-minute timeframe 上持续位于 EMA20
+上方时，未来短期 Return 是否高于正常水平？
 
 ## Hypothesis
 
-如果连续 20 根 5-minute candles 的 Open 和 Close 都高于各自的 EMA20，则接下来 12 根 candles（1 小时）的 Expected Return 高于 BTC 无条件未来 1 小时 Expected Return。
+如果截至当前时刻最近连续 20 根 5-minute candles
+的 Open 和 Close 都高于各自 EMA20，
+
+那么接下来 12 根 candles（60 minutes）的
+Expected Return 高于 BTC 无条件未来 60 分钟 Expected Return。
 
 ## Asset
 
@@ -26,54 +31,58 @@ Binance
 
 ## Data
 
-OHLCV，使用 Freqtrade 下载。
+OHLCV  
+Source: Freqtrade downloaded Binance historical data
 
 ## Momentum Condition
 
-TBD
+最近连续 20 根 completed candles 全部满足：
 
-## Prediction Horizon
-
-TBD
+Open > EMA20  
+AND  
+Close > EMA20
 
 ## Signal
 
-从 t 开始算，连续 20 根 candles 的 Open 与 Close 大于各自的 EMA20。
+如果 Momentum Condition 成立：
+
+Signal_t = 1
+
+否则：
+
+Signal_t = 0
+
+## Prediction Horizon
+
+12 candles = 60 minutes
 
 ## Signal becomes known at
 
-假设 candle 是：
-
-13:00 → 13:05
-
-Signal 最早在 13:06 知道，也就是 t+1 的 open 附近。
+Candle t 完全收盘之后。
 
 ## Earliest Execution
 
-保守的 baseline 最早应该在 t+1 的 open 成交。
+Baseline assumption:  
+下一根 candle（t+1）的 Open。
 
-> 注意：不能使用 candle close 后才能确认的信息，却假设自己成交在同一根 candle 的 close。回测实现时必须显式处理 signal / execution timestamp alignment。
+注意：  
+真实执行存在 latency / spread / slippage，  
+后续需要加入更加现实的 execution model。
 
 ## Transaction Costs
 
-TBD（需要查询 Binance 当前费用，并在接近真实交易的 backtest 中考虑 fees / spread / slippage；如研究 perpetual futures，还要考虑 funding）。
+TBD
 
-## What result would make me reject the hypothesis?
+之后查询 Binance 最新手续费，并加入：
+- fees
+- spread
+- slippage
 
-当 Research Question 的答案是 “No” 时，reject hypothesis。
+Spot 暂时没有 perpetual funding。
 
-后续应进一步把 rejection criteria 量化，例如：
+## Hypothesis not supported if
 
-- 条件未来 1h return 没有稳定高于 unconditional baseline；
-- 差异在 transaction costs 后消失；
-- 结果在 out-of-sample / 不同时间段中不稳定；
-- 仅依赖非常狭窄参数区间，疑似 overfitting。
+如果 Signal=1 后的未来 60-minute Expected Return
+没有高于 BTC 无条件未来 60-minute Expected Return，
 
-## Next Steps
-
-1. 明确定义 EMA20 和连续 20 根 candle 条件的精确计算方式。
-2. 定义 forward 12-candle return，确认 timestamp alignment。
-3. 先做无交易执行假设的 conditional-return research baseline。
-4. 比较 signal 条件下 vs unconditional 的 return distribution。
-5. 检查样本数、均值/中位数、volatility、置信区间与 regime dependence。
-6. 再进入可交易 backtest，并加入 execution lag 与 transaction costs。
+则当前实验没有 evidence 支持该 Momentum Hypothesis。
